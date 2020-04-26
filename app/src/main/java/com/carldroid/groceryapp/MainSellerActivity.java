@@ -1,16 +1,22 @@
 package com.carldroid.groceryapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.carldroid.groceryapp.Adapters.ProductSeller;
+import com.carldroid.groceryapp.Models.ModelProduct;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,15 +26,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class MainSellerActivity extends AppCompatActivity {
 
-    private TextView nameTv, emailTv, shopNameTv, productTab, OrderTab;
-    private ImageButton logout, editProfileBtn, addProductBtn;
+    private TextView nameTv, filteredProductsTv, emailTv, shopNameTv, productTab, OrderTab;
+    private ImageButton logout, editProfileBtn, addProductBtn, filterProductBtn;
     private ImageView profileIv;
+    private EditText searchProductEt;
+    private RecyclerView productsRv;
 
     private FirebaseAuth firebaseAuth;
 
     private RelativeLayout productsRl, ordersRl;
+
+    private ArrayList<ModelProduct> productList;
+    ProductSeller adapterProductSeller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +49,8 @@ public class MainSellerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_seller);
 
         logout = findViewById(R.id.logoutBtn);
+        productsRv = findViewById(R.id.productsRv);
+        filteredProductsTv = findViewById(R.id.filteredProductsTv);
         editProfileBtn = findViewById(R.id.editProfileBtn);
         nameTv = findViewById(R.id.nameTv);
         emailTv = findViewById(R.id.emailTv);
@@ -46,16 +61,19 @@ public class MainSellerActivity extends AppCompatActivity {
         OrderTab = findViewById(R.id.ordersTab);
         productsRl = findViewById(R.id.productsRl);
         ordersRl = findViewById(R.id.odersRl);
+        searchProductEt = findViewById(R.id.searchProductEt);
+        filterProductBtn = findViewById(R.id.filterProductBtn);
 
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
+        loadAllProducts();
 
         showProductsUi();
 
         productTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
                 showProductsUi();
 
             }
@@ -96,6 +114,51 @@ public class MainSellerActivity extends AppCompatActivity {
 
             }
         });
+
+        filterProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainSellerActivity.this);
+                builder.setTitle("Choose Category:")
+                        .setItems(Constants.categories, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+            }
+        });
+    }
+
+    private void loadAllProducts() {
+
+        productList = new ArrayList<>();
+
+        //get all products
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("Products")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //before getting data
+                        productList.clear();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            ModelProduct product = ds.getValue(ModelProduct.class);
+                            productList.add(product);
+                        }
+
+                        //set up adapter
+                        adapterProductSeller = new ProductSeller(MainSellerActivity.this,productList);
+                        productsRv.setAdapter(adapterProductSeller);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                })
+
     }
 
     private void showOdersUi() {

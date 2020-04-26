@@ -5,6 +5,8 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,19 +15,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carldroid.groceryapp.Models.ModelProduct;
+import com.carldroid.groceryapp.Normal.FilterProducts;
 import com.carldroid.groceryapp.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProductSeller> {
+public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProductSeller> implements Filterable {
 
     private Context context;
-    public ArrayList<ModelProduct> modelProducts;
+    public ArrayList<ModelProduct> modelProducts, filterlist;
+    private FilterProducts filter;
 
-    public ProductSeller(Context context, ArrayList<ModelProduct> modelProducts) {
+    public ProductSeller(Context context, ArrayList<ModelProduct> modelProducts, ArrayList<ModelProduct> filterlist) {
         this.context = context;
         this.modelProducts = modelProducts;
+        this.filterlist = filterlist;
     }
 
     @NonNull
@@ -81,12 +86,28 @@ public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProd
             //Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //handle item clicks, show item details
+
+            }
+        });
+
 
     }
 
     @Override
     public int getItemCount() {
         return 0;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null) {
+            filter = new FilterProducts(this,filterlist);
+        }
+        return filter;
     }
 
     class HolderProductSeller extends RecyclerView.ViewHolder {
