@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,11 +22,13 @@ import com.squareup.picasso.Picasso;
 
 public class MainSellerActivity extends AppCompatActivity {
 
-    private TextView nameTv, emailTv, shopNameTv;
+    private TextView nameTv, emailTv, shopNameTv, productTab, OrderTab;
     private ImageButton logout, editProfileBtn, addProductBtn;
     private ImageView profileIv;
 
     private FirebaseAuth firebaseAuth;
+
+    private RelativeLayout productsRl, ordersRl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,32 @@ public class MainSellerActivity extends AppCompatActivity {
         shopNameTv = findViewById(R.id.shopNameTv);
         addProductBtn = findViewById(R.id.addProductBtn);
         profileIv = findViewById(R.id.profileIv);
+        productTab = findViewById(R.id.productsTab);
+        OrderTab = findViewById(R.id.ordersTab);
+        productsRl = findViewById(R.id.productsRl);
+        ordersRl = findViewById(R.id.odersRl);
 
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
+
+        showProductsUi();
+
+        productTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                showProductsUi();
+
+            }
+        });
+
+        OrderTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                showOdersUi();
+            }
+        });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +96,32 @@ public class MainSellerActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void showOdersUi() {
+        productsRl.setVisibility(View.GONE);
+        ordersRl.setVisibility(View.VISIBLE);
+
+        productTab.setTextColor(getResources().getColor(R.color.colorWhite));
+        productTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+        OrderTab.setTextColor(getResources().getColor(R.color.colorblack));
+        OrderTab.setBackgroundResource(R.drawable.shape_rect04);
+
+    }
+
+    private void showProductsUi() {
+
+        productsRl.setVisibility(View.VISIBLE);
+        ordersRl.setVisibility(View.GONE);
+
+        productTab.setTextColor(getResources().getColor(R.color.colorblack));
+        productTab.setBackgroundResource(R.drawable.shape_rect04);
+
+        OrderTab.setTextColor(getResources().getColor(R.color.colorWhite));
+        OrderTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+
     }
 
     private void checkUser() {

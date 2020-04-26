@@ -145,7 +145,8 @@ public class AddProductActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+               startActivity(new Intent(AddProductActivity.this,MainSellerActivity.class));
+               finish();
             }
         });
     }

@@ -31,7 +31,6 @@
             android:src="@drawable/ic_edit_white" />
 
 
-
         <!-- Add product button-->
         <ImageButton
             android:id="@+id/addProductBtn"
@@ -78,5 +77,48 @@
             android:text="Email"
             android:textColor="@color/colorWhite" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/profileIv"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/shape_rect03"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/productsTab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shape_rect04"
+                android:gravity="center"
+                android:text="Products"
+                android:textColor="@color/colorblack" />
+
+            <TextView
+                android:id="@+id/ordersTab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Oders"
+                android:textColor="@color/colorWhite" />
+        </LinearLayout>
+
+
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/productsRl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toobarRl" />
+
+    <RelativeLayout
+        android:id="@+id/odersRl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toobarRl" />
+
 </RelativeLayout>

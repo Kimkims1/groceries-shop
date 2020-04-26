@@ -120,8 +120,8 @@ public class ProfileEditSellerActivity extends AppCompatActivity implements Loca
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //go back previous activity
-                onBackPressed();
+                startActivity(new Intent(ProfileEditSellerActivity.this,MainSellerActivity.class));
+                finish();
             }
         });
 

@@ -87,7 +87,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_edit_user);
 
-        backBtn = findViewById(R.id.backBtn);
+        backBtn = findViewById(R.id.backBtnProfile);
         gpsBtn = findViewById(R.id.gpsBtn);
         profileIv = findViewById(R.id.profileIv);
         nameEt = findViewById(R.id.nameEt);
@@ -116,7 +116,8 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                startActivity(new Intent(ProfileEditUserActivity.this, MainUserActivity.class));
+                finish();
             }
         });
 
@@ -146,8 +147,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         });
     }
 
-    private String  name, country, city, phone, state, address;
-
+    private String name, country, city, phone, state, address;
 
 
     private void inputData() {
