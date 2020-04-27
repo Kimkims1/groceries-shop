@@ -2,17 +2,17 @@ package com.carldroid.groceryapp.Normal;
 
 import android.widget.Filter;
 
-import com.carldroid.groceryapp.Adapters.ProductSeller;
+import com.carldroid.groceryapp.Adapters.AdapterProductSeller;
 import com.carldroid.groceryapp.Models.ModelProduct;
 
 import java.util.ArrayList;
 
 public class FilterProducts extends Filter {
 
-    private ProductSeller adapter;
+    private AdapterProductSeller adapter;
     private ArrayList<ModelProduct> filterList;
 
-    public FilterProducts(ProductSeller adapter, ArrayList<ModelProduct> filterList) {
+    public FilterProducts(AdapterProductSeller adapter, ArrayList<ModelProduct> filterList) {
         this.adapter = adapter;
         this.filterList = filterList;
     }
@@ -53,7 +53,7 @@ public class FilterProducts extends Filter {
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
 
-        adapter.modelProducts = (ArrayList<ModelProduct>) results.values;
+        adapter.productList = (ArrayList<ModelProduct>) results.values;
 
         //refresh adapter
         adapter.notifyDataSetChanged();

@@ -9,7 +9,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,16 +20,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProductSeller> implements Filterable {
+public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSeller.HolderProductSeller> implements Filterable {
 
     private Context context;
-    public ArrayList<ModelProduct> modelProducts, filterlist;
+    public ArrayList<ModelProduct> productList, filterlist;
     private FilterProducts filter;
 
-    public ProductSeller(Context context, ArrayList<ModelProduct> modelProducts) {
+
+    public AdapterProductSeller(Context context, ArrayList<ModelProduct> productList) {
         this.context = context;
-        this.modelProducts = modelProducts;
-        this.filterlist = filterlist;
+        this.productList = productList;
+        this.filterlist = productList;
     }
 
     @NonNull
@@ -45,7 +45,7 @@ public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProd
     @Override
     public void onBindViewHolder(@NonNull HolderProductSeller holder, int position) {
 
-        ModelProduct product = modelProducts.get(position);
+        ModelProduct product = productList.get(position);
         String id = product.getProductId();
         String uid = product.getUid();
         String discNote = product.getDiscountNote();
@@ -112,6 +112,7 @@ public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProd
 
     class HolderProductSeller extends RecyclerView.ViewHolder {
 
+        //holds view of recyclerview
         private ImageView productIv;
         private TextView discountedNoteTv, titleTv, quantityTv, discountedPriceTv, originalPriceTv;
 

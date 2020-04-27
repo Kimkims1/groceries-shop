@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.carldroid.groceryapp.Adapters.ProductSeller;
+import com.carldroid.groceryapp.Adapters.AdapterProductSeller;
 import com.carldroid.groceryapp.Models.ModelProduct;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,18 +32,20 @@ import java.util.ArrayList;
 
 public class MainSellerActivity extends AppCompatActivity {
 
-    private TextView nameTv, filteredProductsTv, emailTv, shopNameTv, productTab, OrderTab;
+    private TextView nameTv, filteredProductsTv, emailTv, shopNameTv, tabsProductsTv, tabsOrdersTv;
     private ImageButton logout, editProfileBtn, addProductBtn, filterProductBtn;
     private ImageView profileIv;
     private EditText searchProductEt;
-    private RecyclerView productsRv;
+
 
     private FirebaseAuth firebaseAuth;
 
     private RelativeLayout productsRl, ordersRl;
 
     private ArrayList<ModelProduct> productList;
-    private ProductSeller adapterProductSeller;
+    private AdapterProductSeller adapterProductSeller;
+
+    private RecyclerView productsRv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,19 +54,20 @@ public class MainSellerActivity extends AppCompatActivity {
 
         logout = findViewById(R.id.logoutBtn);
         productsRv = findViewById(R.id.productsRv);
+        filterProductBtn = findViewById(R.id.filterBtn);
         filteredProductsTv = findViewById(R.id.filteredProductsTv);
+        searchProductEt = findViewById(R.id.searchProductEt);
         editProfileBtn = findViewById(R.id.editProfileBtn);
         nameTv = findViewById(R.id.nameTv);
         emailTv = findViewById(R.id.emailTv);
         shopNameTv = findViewById(R.id.shopNameTv);
         addProductBtn = findViewById(R.id.addProductBtn);
         profileIv = findViewById(R.id.profileIv);
-        productTab = findViewById(R.id.productsTab);
-        OrderTab = findViewById(R.id.ordersTab);
+        tabsProductsTv = findViewById(R.id.tabsProductsTv);
+        tabsOrdersTv = findViewById(R.id.tabsOrdersTv);
         productsRl = findViewById(R.id.productsRl);
         ordersRl = findViewById(R.id.odersRl);
-        searchProductEt = findViewById(R.id.searchProductEt);
-        filterProductBtn = findViewById(R.id.filterProductBtn);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
@@ -80,10 +83,12 @@ public class MainSellerActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
                 try {
                     adapterProductSeller.getFilter().filter(s);
 
                 } catch (Exception e) {
+
                     e.printStackTrace();
                 }
             }
@@ -93,8 +98,7 @@ public class MainSellerActivity extends AppCompatActivity {
 
             }
         });
-
-        productTab.setOnClickListener(new View.OnClickListener() {
+        tabsProductsTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -103,11 +107,11 @@ public class MainSellerActivity extends AppCompatActivity {
             }
         });
 
-        OrderTab.setOnClickListener(new View.OnClickListener() {
+        tabsOrdersTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                showOdersUi();
+                showOrdersUi();
             }
         });
 
@@ -144,25 +148,27 @@ public class MainSellerActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainSellerActivity.this);
-                builder.setTitle("Choose Category:")
-                        .setItems(Constants.categories, new DialogInterface.OnClickListener() {
+                builder.setTitle("Choose Category: ")
+                        .setItems(Constants.categories1, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //get selected item
+
                                 String selected = Constants.categories1[which];
                                 filteredProductsTv.setText(selected);
+
                                 if (selected.equals("All")) {
                                     //load all
                                     loadAllProducts();
                                 } else {
                                     loadFilteredProducts(selected);
                                 }
-
                             }
                         })
                         .show();
+
             }
         });
+
     }
 
     private void loadFilteredProducts(final String selected) {
@@ -174,23 +180,24 @@ public class MainSellerActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //before getting data
+                        //before getting data, reset list
                         productList.clear();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
                             String productCategory = "" + ds.child("productCategory").getValue();
 
                             if (selected.equals(productCategory)) {
-
-                                ModelProduct product = ds.getValue(ModelProduct.class);
-                                productList.add(product);
+                                ModelProduct modelProduct = ds.getValue(ModelProduct.class);
+                                productList.add(modelProduct);
                             }
-
                         }
 
-                        //set up adapter
-                        adapterProductSeller = new ProductSeller(MainSellerActivity.this, productList);
+                        //Set up adapter
+                        adapterProductSeller = new AdapterProductSeller(MainSellerActivity.this, productList);
+                        //set adapter
                         productsRv.setAdapter(adapterProductSeller);
+
+
                     }
 
                     @Override
@@ -200,6 +207,7 @@ public class MainSellerActivity extends AppCompatActivity {
                 });
 
     }
+
 
     private void loadAllProducts() {
 
@@ -211,16 +219,19 @@ public class MainSellerActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //before getting data
+                        //before getting data, reset list
                         productList.clear();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            ModelProduct product = ds.getValue(ModelProduct.class);
-                            productList.add(product);
+                            ModelProduct modelProduct = ds.getValue(ModelProduct.class);
+                            productList.add(modelProduct);
                         }
 
-                        //set up adapter
-                        adapterProductSeller = new ProductSeller(MainSellerActivity.this, productList);
+                        //Set up adapter
+                        adapterProductSeller = new AdapterProductSeller(MainSellerActivity.this, productList);
+                        //set adapter
                         productsRv.setAdapter(adapterProductSeller);
+
+
                     }
 
                     @Override
@@ -231,29 +242,28 @@ public class MainSellerActivity extends AppCompatActivity {
 
     }
 
-    private void showOdersUi() {
-        productsRl.setVisibility(View.GONE);
-        ordersRl.setVisibility(View.VISIBLE);
-
-        productTab.setTextColor(getResources().getColor(R.color.colorWhite));
-        productTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-
-        OrderTab.setTextColor(getResources().getColor(R.color.colorblack));
-        OrderTab.setBackgroundResource(R.drawable.shape_rect04);
-
-    }
 
     private void showProductsUi() {
 
         productsRl.setVisibility(View.VISIBLE);
         ordersRl.setVisibility(View.GONE);
 
-        productTab.setTextColor(getResources().getColor(R.color.colorblack));
-        productTab.setBackgroundResource(R.drawable.shape_rect04);
+        tabsProductsTv.setTextColor(getResources().getColor(R.color.colorblack));
+        tabsProductsTv.setBackgroundResource(R.drawable.shape_rect04);
 
-        OrderTab.setTextColor(getResources().getColor(R.color.colorWhite));
-        OrderTab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        tabsOrdersTv.setTextColor(getResources().getColor(R.color.colorWhite));
+        tabsOrdersTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+    }
 
+    private void showOrdersUi() {
+        productsRl.setVisibility(View.GONE);
+        ordersRl.setVisibility(View.VISIBLE);
+
+        tabsProductsTv.setTextColor(getResources().getColor(R.color.colorWhite));
+        tabsProductsTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+        tabsOrdersTv.setTextColor(getResources().getColor(R.color.colorblack));
+        tabsOrdersTv.setBackgroundResource(R.drawable.shape_rect04);
 
     }
 

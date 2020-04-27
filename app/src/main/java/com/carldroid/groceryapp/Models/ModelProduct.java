@@ -1,12 +1,16 @@
 package com.carldroid.groceryapp.Models;
 
 public class ModelProduct {
-    private String productId, productTitle, productCategory, productDescription, productQuantity, productIcon, originalPrice, discountPrice, discountNote, discountAvailable, timestamp, uid;
+    private String productId, productTitle, productCategory, productDescription, productQuantity, productIcon, originalPrice,
+            discountPrice, discountNote, discountAvailable, timestamp, uid;
 
     public ModelProduct() {
+
     }
 
-    public ModelProduct(String productId, String productTitle, String productCategory, String productDescription, String productQuantity, String productIcon, String originalPrice, String discountPrice, String discountNote, String discountAvailable, String timestamp, String uid) {
+    public ModelProduct(String productId, String productTitle, String productCategory, String productDescription,
+                        String productQuantity, String productIcon, String originalPrice, String discountPrice,
+                        String discountNote, String discountAvailable, String timestamp, String uid) {
         this.productId = productId;
         this.productTitle = productTitle;
         this.productCategory = productCategory;
