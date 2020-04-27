@@ -107,6 +107,9 @@
         </LinearLayout>
 
 
+
+
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -115,49 +118,6 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toobarRl">
 
-        <!-- SearchView-->
-        <EditText
-            android:id="@+id/searchProductEt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="@drawable/shape_rect02"
-            android:drawableStart="@drawable/ic_search_gray"
-            android:drawablePadding="10dp"
-            android:hint="Search product"
-            android:padding="10dp" />
-
-        <!-- filter -->
-        <ImageButton
-            android:id="@+id/filterProductBtn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_filter_gray" />
-
-        <TextView
-            android:id="@+id/filteredProductsTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/searchProductEt"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:text="Showing All"
-            android:textColor="@color/colorblack" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/productsRv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/filteredProductsTv"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="5dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/row_products_seller"
-            />
 
 
     </RelativeLayout>
@@ -167,6 +127,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toobarRl"></RelativeLayout>
-
 
 </RelativeLayout>

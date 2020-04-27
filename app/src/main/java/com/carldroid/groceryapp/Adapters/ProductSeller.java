@@ -27,7 +27,7 @@ public class ProductSeller extends RecyclerView.Adapter<ProductSeller.HolderProd
     public ArrayList<ModelProduct> modelProducts, filterlist;
     private FilterProducts filter;
 
-    public ProductSeller(Context context, ArrayList<ModelProduct> modelProducts, ArrayList<ModelProduct> filterlist) {
+    public ProductSeller(Context context, ArrayList<ModelProduct> modelProducts) {
         this.context = context;
         this.modelProducts = modelProducts;
         this.filterlist = filterlist;

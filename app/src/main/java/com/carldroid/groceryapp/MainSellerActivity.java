@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -41,7 +43,7 @@ public class MainSellerActivity extends AppCompatActivity {
     private RelativeLayout productsRl, ordersRl;
 
     private ArrayList<ModelProduct> productList;
-    ProductSeller adapterProductSeller;
+    private ProductSeller adapterProductSeller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,28 @@ public class MainSellerActivity extends AppCompatActivity {
         loadAllProducts();
 
         showProductsUi();
+
+        searchProductEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    adapterProductSeller.getFilter().filter(s);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         productTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,11 +148,57 @@ public class MainSellerActivity extends AppCompatActivity {
                         .setItems(Constants.categories, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //get selected item
+                                String selected = Constants.categories1[which];
+                                filteredProductsTv.setText(selected);
+                                if (selected.equals("All")) {
+                                    //load all
+                                    loadAllProducts();
+                                } else {
+                                    loadFilteredProducts(selected);
+                                }
 
                             }
                         })
+                        .show();
             }
         });
+    }
+
+    private void loadFilteredProducts(final String selected) {
+        productList = new ArrayList<>();
+
+        //get all products
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("Products")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //before getting data
+                        productList.clear();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                            String productCategory = "" + ds.child("productCategory").getValue();
+
+                            if (selected.equals(productCategory)) {
+
+                                ModelProduct product = ds.getValue(ModelProduct.class);
+                                productList.add(product);
+                            }
+
+                        }
+
+                        //set up adapter
+                        adapterProductSeller = new ProductSeller(MainSellerActivity.this, productList);
+                        productsRv.setAdapter(adapterProductSeller);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
     }
 
     private void loadAllProducts() {
@@ -149,7 +219,7 @@ public class MainSellerActivity extends AppCompatActivity {
                         }
 
                         //set up adapter
-                        adapterProductSeller = new ProductSeller(MainSellerActivity.this,productList);
+                        adapterProductSeller = new ProductSeller(MainSellerActivity.this, productList);
                         productsRv.setAdapter(adapterProductSeller);
                     }
 
@@ -157,7 +227,7 @@ public class MainSellerActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                })
+                });
 
     }
 
