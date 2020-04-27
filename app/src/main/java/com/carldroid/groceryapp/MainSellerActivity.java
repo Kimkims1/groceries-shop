@@ -230,8 +230,6 @@ public class MainSellerActivity extends AppCompatActivity {
                         adapterProductSeller = new AdapterProductSeller(MainSellerActivity.this, productList);
                         //set adapter
                         productsRv.setAdapter(adapterProductSeller);
-
-
                     }
 
                     @Override
