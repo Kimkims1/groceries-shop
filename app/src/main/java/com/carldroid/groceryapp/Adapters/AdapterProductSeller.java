@@ -185,9 +185,10 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
             @Override
             public void onClick(View v) {
 
+                bottomSheetDialog.dismiss();
                 //open edit product activity,pass id of the product
                 Intent intent = new Intent(context, EditProductActivity.class);
-                intent.putExtra("productId",id);
+                intent.putExtra("productId", id);
                 context.startActivity(intent);
 
             }
@@ -197,6 +198,8 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                bottomSheetDialog.dismiss();
 
                 //show delete confirm dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);

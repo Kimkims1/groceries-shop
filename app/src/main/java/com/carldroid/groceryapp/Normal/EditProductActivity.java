@@ -31,7 +31,21 @@ import com.carldroid.groceryapp.AddProductActivity;
 import com.carldroid.groceryapp.Constants;
 import com.carldroid.groceryapp.MainSellerActivity;
 import com.carldroid.groceryapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
 
 public class EditProductActivity extends AppCompatActivity {
 
@@ -82,6 +96,8 @@ public class EditProductActivity extends AppCompatActivity {
         productId = getIntent().getStringExtra("productId");
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        loadProductDetails();
 
         //set up progress dialog
         progressDialog = new ProgressDialog(this);
@@ -146,6 +162,61 @@ public class EditProductActivity extends AppCompatActivity {
         });
     }
 
+    private void loadProductDetails() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("Products").child(productId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //get data
+                        String id = "" + dataSnapshot.child("productId").getValue();
+                        String productTitle = "" + dataSnapshot.child("productTitle").getValue();
+                        String productCategory = "" + dataSnapshot.child("productCategory").getValue();
+                        String productDescription = "" + dataSnapshot.child("productDescription").getValue();
+                        String productQuantity = "" + dataSnapshot.child("productQuantity").getValue();
+                        String productIcon = "" + dataSnapshot.child("productIcon").getValue();
+                        String originalPrice = "" + dataSnapshot.child("originalPrice").getValue();
+                        String discountPrice = "" + dataSnapshot.child("discountPrice").getValue();
+                        String discountNote = "" + dataSnapshot.child("discountNote").getValue();
+                        String discountAvailable = "" + dataSnapshot.child("discountAvailable").getValue();
+                        String timestamp = "" + dataSnapshot.child("timestamp").getValue();
+                        String uid = "" + dataSnapshot.child("uid").getValue();
+
+
+                        //set data to views
+                        if (discountAvailable.equals("true")) {
+                            discountSwitch.setChecked(true);
+
+                            discountedPriceEt.setVisibility(View.VISIBLE);
+                            discountedNote.setVisibility(View.VISIBLE);
+
+                        } else {
+                            discountedPriceEt.setVisibility(View.GONE);
+                            discountedNote.setVisibility(View.GONE);
+                        }
+
+                        titleEt.setText(productTitle);
+                        descEt.setText(productDescription);
+                        categoryTv.setText(productCategory);
+                        discountedNote.setText(discountNote);
+                        quantityEt.setText(productQuantity);
+                        priceEt.setText(originalPrice);
+                        discountedPriceEt.setText(discountPrice);
+
+                        try {
+                            Picasso.get().load(productIcon).placeholder(R.drawable.ic_add_shopping_white).into(productIconIv);
+                        } catch (Exception e) {
+                            productIconIv.setImageResource(R.drawable.ic_add_shopping_white);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
 
 
     private String productTitle, productDescr, productCategory, productQuantity, originalPrice, discountPrice,
@@ -189,7 +260,110 @@ public class EditProductActivity extends AppCompatActivity {
             discountNote = "";
         }
 
-        //addProductToDb();
+        addProductToDb();
+    }
+
+    private void addProductToDb() {
+
+        progressDialog.setMessage("Updating product...");
+        progressDialog.show();
+
+        if (image_uri == null) {
+            //update without image
+
+            //set up data in hashmap to update
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("productTitle", "" + productTitle);
+            hashMap.put("productDescription", "" + productDescr);
+            hashMap.put("productCategory", "" + productCategory);
+            hashMap.put("productQuantity", "" + productQuantity);
+            hashMap.put("originalPrice", "" + originalPrice);
+            hashMap.put("discountAvailable", "" + discountAvailable);
+            hashMap.put("discountNote", "" + discountNote);
+
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+            reference.child(firebaseAuth.getUid()).child("Products").child(productId)
+                    .updateChildren(hashMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //update success
+                            progressDialog.dismiss();
+                            Toast.makeText(EditProductActivity.this, "Update Successful..", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            progressDialog.dismiss();
+                            Toast.makeText(EditProductActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+        } else {
+            //update with image
+
+            //first upload image
+            String filePathAndName = "product_images/" + "" + productId; //override previous image with same id
+
+            //upload image
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference(filePathAndName);
+            storageReference.putFile(image_uri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            //image uploaded, get url of uploaded image
+
+                            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                            while (!uriTask.isSuccessful());
+                            Uri downloadImageUri = uriTask.getResult();
+
+                            if (uriTask.isSuccessful()){
+
+                                //set up data in hashmap to update
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("productTitle", "" + productTitle);
+                                hashMap.put("productDescription", "" + productDescr);
+                                hashMap.put("productCategory", "" + productCategory);
+                                hashMap.put("productIcon", "" + downloadImageUri);
+                                hashMap.put("productQuantity", "" + productQuantity);
+                                hashMap.put("originalPrice", "" + originalPrice);
+                                hashMap.put("discountAvailable", "" + discountAvailable);
+                                hashMap.put("discountNote", "" + discountNote);
+
+                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+                                reference.child(firebaseAuth.getUid()).child("Products").child(productId)
+                                        .updateChildren(hashMap)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                //update success
+                                                progressDialog.dismiss();
+                                                Toast.makeText(EditProductActivity.this, "Update Successful..", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+
+                                                progressDialog.dismiss();
+                                                Toast.makeText(EditProductActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                            }
+                                        });
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+        }
     }
 
     private void categoryDialog() {
