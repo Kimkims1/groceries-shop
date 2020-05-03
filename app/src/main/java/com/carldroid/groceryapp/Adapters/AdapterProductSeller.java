@@ -19,8 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carldroid.groceryapp.Models.ModelProduct;
-import com.carldroid.groceryapp.Normal.EditProductActivity;
-import com.carldroid.groceryapp.Normal.FilterProducts;
+import com.carldroid.groceryapp.Activities.EditProductActivity;
+import com.carldroid.groceryapp.Search.FilterProducts;
 import com.carldroid.groceryapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

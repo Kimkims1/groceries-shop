@@ -1,4 +1,4 @@
-package com.carldroid.groceryapp;
+package com.carldroid.groceryapp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.carldroid.groceryapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -157,11 +157,11 @@ public class LoginActivity extends AppCompatActivity {
                             String accountType = ""+ds.child("accountType").getValue();
                             if (accountType.equals("Seller")){
                                 progressDialog.dismiss();
-                                startActivity(new Intent(LoginActivity.this,MainSellerActivity.class));
+                                startActivity(new Intent(LoginActivity.this, MainSellerActivity.class));
                                 finish();
                             }else {
                                 progressDialog.dismiss();
-                                startActivity(new Intent(LoginActivity.this,MainUserActivity.class));
+                                startActivity(new Intent(LoginActivity.this, MainUserActivity.class));
                                 finish();
                             }
                         }

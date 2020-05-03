@@ -1,4 +1,4 @@
-package com.carldroid.groceryapp;
+package com.carldroid.groceryapp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,7 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.carldroid.groceryapp.Adapters.AdapterProductSeller;
+import com.carldroid.groceryapp.Constants;
 import com.carldroid.groceryapp.Models.ModelProduct;
+import com.carldroid.groceryapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

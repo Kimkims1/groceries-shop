@@ -1,8 +1,9 @@
-package com.carldroid.groceryapp;
+package com.carldroid.groceryapp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -29,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.carldroid.groceryapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,12 +50,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class ProfileEditUserActivity extends AppCompatActivity implements LocationListener {
+public class ProfileEditSellerActivity extends AppCompatActivity implements LocationListener {
 
     private ImageButton backBtn, gpsBtn;
     private ImageView profileIv;
-    private EditText nameEt, phoneEt, countryEt, stateEt, cityEt, addressEt;
+    private EditText nameEt, deliveryFeeEt, shopNameEt, phoneEt, countryEt, stateEt, cityEt, addressEt;
     private Button updateBtn;
+    private SwitchCompat openShopSwitch;
 
     //permissions constants
     public static final int LOCATION_REQUEST_CODE = 100;
@@ -82,12 +85,13 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
 
     private LocationManager locationManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_edit_user);
+        setContentView(R.layout.activity_profile_edit_seller);
 
-        backBtn = findViewById(R.id.backBtnProfile);
+        backBtn = findViewById(R.id.backBtn);
         gpsBtn = findViewById(R.id.gpsBtn);
         profileIv = findViewById(R.id.profileIv);
         nameEt = findViewById(R.id.nameEt);
@@ -97,10 +101,11 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         cityEt = findViewById(R.id.cityEt);
         addressEt = findViewById(R.id.addressEt);
         updateBtn = findViewById(R.id.updateBtn);
-
+        deliveryFeeEt = findViewById(R.id.deliveryFeeEt);
+        shopNameEt = findViewById(R.id.shopNameEt);
+        openShopSwitch = findViewById(R.id.openShopSwitch);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
         checkUser();
 
         //set up progress dialog
@@ -116,14 +121,22 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ProfileEditUserActivity.this, MainUserActivity.class));
+                startActivity(new Intent(ProfileEditSellerActivity.this,MainSellerActivity.class));
                 finish();
+            }
+        });
+
+        profileIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImagePickDialog();
             }
         });
 
         gpsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //detect current location
                 if (checkLocationPermission()) {
                     //already allowed
                     detectLocation();
@@ -142,22 +155,25 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
             public void onClick(View v) {
                 //begin update process
                 inputData();
-
             }
         });
     }
 
-    private String name, country, city, phone, state, address;
+    private String shopName, name, country, city, phone, deliveryFee, state, address;
+    private boolean shopOpen;
 
 
     private void inputData() {
 
         name = nameEt.getText().toString().trim();
+        shopName = shopNameEt.getText().toString().trim();
         phone = phoneEt.getText().toString().trim();
         country = countryEt.getText().toString().trim();
         city = cityEt.getText().toString().trim();
+        deliveryFee = deliveryFeeEt.getText().toString().trim();
         state = stateEt.getText().toString().trim();
         address = addressEt.getText().toString().trim();
+        shopOpen = openShopSwitch.isChecked(); //true or false
 
 
         updateProfile();
@@ -174,14 +190,16 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
             //set up data to update
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("name", "" + name);
+            hashMap.put("shopName", "" + shopName);
             hashMap.put("phone", "" + phone);
+            hashMap.put("deliveryFee", "" + deliveryFee);
             hashMap.put("country", "" + country);
             hashMap.put("city", "" + city);
             hashMap.put("address", "" + address);
             hashMap.put("state", "" + state);
             hashMap.put("latitude", "" + latitude);
             hashMap.put("longitude", "" + longitude);
-
+            hashMap.put("shopOpen", "" + shopOpen);
 
             //update to database
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
@@ -191,14 +209,14 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                         public void onSuccess(Void aVoid) {
 
                             progressDialog.dismiss();
-                            Toast.makeText(ProfileEditUserActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileEditSellerActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
 
                     progressDialog.dismiss();
-                    Toast.makeText(ProfileEditUserActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileEditSellerActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -224,13 +242,16 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                                     //set up data to update
                                     HashMap<String, Object> hashMap = new HashMap<>();
                                     hashMap.put("name", "" + name);
+                                    hashMap.put("shopName", "" + shopName);
                                     hashMap.put("phone", "" + phone);
+                                    hashMap.put("deliveryFee", "" + deliveryFee);
                                     hashMap.put("country", "" + country);
                                     hashMap.put("city", "" + city);
                                     hashMap.put("address", "" + address);
                                     hashMap.put("state", "" + state);
                                     hashMap.put("latitude", "" + latitude);
                                     hashMap.put("longitude", "" + longitude);
+                                    hashMap.put("shopOpen", "" + shopOpen);
                                     hashMap.put("profileImage", "" + downloadImageUri);
 
                                     //update to database
@@ -241,14 +262,14 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                                                 public void onSuccess(Void aVoid) {
 
                                                     progressDialog.dismiss();
-                                                    Toast.makeText(ProfileEditUserActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(ProfileEditSellerActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
 
                                             progressDialog.dismiss();
-                                            Toast.makeText(ProfileEditUserActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ProfileEditSellerActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
 
@@ -260,7 +281,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     progressDialog.dismiss();
-                    Toast.makeText(ProfileEditUserActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileEditSellerActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -292,6 +313,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                             String city = "" + ds.child("city").getValue();
                             String state = "" + ds.child("state").getValue();
                             String country = "" + ds.child("country").getValue();
+                            String deliveryFee = "" + ds.child("deliveryFee").getValue();
                             String email = "" + ds.child("email").getValue();
                             latitude = Double.parseDouble("" + ds.child("latitude").getValue());
                             longitude = Double.parseDouble("" + ds.child("longitude").getValue());
@@ -300,6 +322,8 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                             String phone = "" + ds.child("phone").getValue();
                             String profileImage = "" + ds.child("profileImage").getValue();
                             String timeStamp = "" + ds.child("timeStamp").getValue();
+                            String shopName = "" + ds.child("shopName").getValue();
+                            String shopOpen = "" + ds.child("shopOpen").getValue();
                             String uid = "" + ds.child("uid").getValue();
 
                             nameEt.setText(name);
@@ -308,6 +332,15 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                             stateEt.setText(state);
                             cityEt.setText(city);
                             addressEt.setText(address);
+                            shopNameEt.setText(shopName);
+                            deliveryFeeEt.setText(deliveryFee);
+
+                            if (shopOpen.equals("true")) {
+                                openShopSwitch.setChecked(true);
+
+                            } else {
+                                openShopSwitch.setChecked(false);
+                            }
 
                             try {
                                 Picasso.get().load(profileImage).placeholder(R.drawable.ic_person_gray).into(profileIv);
@@ -325,7 +358,6 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                     }
                 });
     }
-
 
     private void showImagePickDialog() {
         //options to display in dialog
@@ -555,4 +587,3 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
-

@@ -1,4 +1,4 @@
-package com.carldroid.groceryapp.Normal;
+package com.carldroid.groceryapp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,9 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.carldroid.groceryapp.AddProductActivity;
 import com.carldroid.groceryapp.Constants;
-import com.carldroid.groceryapp.MainSellerActivity;
 import com.carldroid.groceryapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

@@ -1,4 +1,4 @@
-package com.carldroid.groceryapp.Normal;
+package com.carldroid.groceryapp.Search;
 
 import android.widget.Filter;
 
