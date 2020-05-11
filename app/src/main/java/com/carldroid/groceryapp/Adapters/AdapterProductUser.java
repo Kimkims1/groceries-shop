@@ -59,7 +59,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
         /* Set data*/
         holder.titleTv.setText(productTitle);
-        /*holder.discountNoteTv.setText(discountNote);*/
+        holder.discountNoteTv.setText(discountNote);
         holder.descriptionTv.setText(productDescription);
         holder.originalPriceTv.setText("$" + originalPrice);
         holder.discountedPriceTv.setText("$" + discountPrice);
@@ -117,6 +117,8 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
     class HolderProductUser extends RecyclerView.ViewHolder {
 
+
+        //ui views
         private ImageView productIconIv;
         private TextView discountNoteTv, titleTv, descriptionTv,
                 addToCartTv, discountedPriceTv, originalPriceTv;
@@ -124,13 +126,16 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         public HolderProductUser(@NonNull View itemView) {
             super(itemView);
 
+
+            //product ui views
             productIconIv = itemView.findViewById(R.id.productIconIv);
-            discountNoteTv = itemView.findViewById(R.id.discountedNote);
+            discountNoteTv = itemView.findViewById(R.id.discountedNoteTv);
             titleTv = itemView.findViewById(R.id.titleTv);
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
             addToCartTv = itemView.findViewById(R.id.addToCartTv);
             discountedPriceTv = itemView.findViewById(R.id.discountedPriceTv);
             originalPriceTv = itemView.findViewById(R.id.originalPriceTv);
+
 
         }
     }
