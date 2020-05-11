@@ -16,7 +16,9 @@
         android:roundIcon="@id/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ShopDetailsActivity"></activity>
+        <activity
+            android:name=".Activities.ShopDetailsActivity"
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name=".Activities.EditProductActivity" />
         <activity android:name=".Activities.AddProductActivity" />
         <activity android:name=".Activities.ProfileEditSellerActivity" />
