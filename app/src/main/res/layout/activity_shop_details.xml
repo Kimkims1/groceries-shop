@@ -186,9 +186,10 @@
 
         <!-- RecyclerView-->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/productRv"
+            android:id="@+id/product_details_Rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:layout_below="@id/filteredProductsTv"
             tools:listitem="@layout/row_products_seller" />
 

@@ -3,6 +3,7 @@ package com.carldroid.groceryapp.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
@@ -37,7 +38,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
     private ImageView shopIv;
     private TextView shopNameTv, phoneTv, emailTv, openCloseTv, deliveryFeeTv, addressTv, filteredPdtsTv;
     private ImageButton callBtn, mapBtn, cartBtn, backBtn, filteredPdtBtn;
-    private RecyclerView productsRv;
+    private RecyclerView product_details_Rv;
     private EditText searchProductEt;
 
     String shopUid;
@@ -68,7 +69,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
         cartBtn = findViewById(R.id.cartBtn);
         backBtn = findViewById(R.id.backBtn);
         filteredPdtBtn = findViewById(R.id.filteredProductsBtn);
-        productsRv = findViewById(R.id.productsRv);
+        product_details_Rv = findViewById(R.id.product_details_Rv);
 
         //get uid of the shop from intent
         shopUid = getIntent().getStringExtra("shopUid");
@@ -100,12 +101,12 @@ public class ShopDetailsActivity extends AppCompatActivity {
             }
         });
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
+     /*   backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               onBackPressed();
             }
-        });
+        });*/
 
         cartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,7 +195,8 @@ public class ShopDetailsActivity extends AppCompatActivity {
                         /* Set up adapter*/
                         adapterProductUser = new AdapterProductUser(ShopDetailsActivity.this, productList);
                         /* set adapter*/
-                        productsRv.setAdapter(adapterProductUser);
+                        product_details_Rv.setAdapter(adapterProductUser);
+
                     }
 
                     @Override

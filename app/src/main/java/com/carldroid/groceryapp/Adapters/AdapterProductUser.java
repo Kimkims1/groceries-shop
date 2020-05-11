@@ -59,15 +59,16 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
         /* Set data*/
         holder.titleTv.setText(productTitle);
-        holder.discountNoteTv.setText(discountNote);
+        /*holder.discountNoteTv.setText(discountNote);*/
         holder.descriptionTv.setText(productDescription);
         holder.originalPriceTv.setText("$" + originalPrice);
         holder.discountedPriceTv.setText("$" + discountPrice);
+        holder.discountNoteTv.setText(discountNote);
 
         if (discountAvailable.equals("true")) {
 
             holder.discountedPriceTv.setVisibility(View.VISIBLE);
-            holder.discountNoteTv.setVisibility(View.VISIBLE);
+            holder.discountNoteTv.setVisibility(View.INVISIBLE);
             holder.originalPriceTv.setPaintFlags(holder.originalPriceTv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
 
@@ -124,8 +125,9 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             super(itemView);
 
             productIconIv = itemView.findViewById(R.id.productIconIv);
-            discountNoteTv = itemView.findViewById(R.id.discountedNoteTv);
+            discountNoteTv = itemView.findViewById(R.id.discountedNote);
             titleTv = itemView.findViewById(R.id.titleTv);
+            descriptionTv = itemView.findViewById(R.id.descriptionTv);
             addToCartTv = itemView.findViewById(R.id.addToCartTv);
             discountedPriceTv = itemView.findViewById(R.id.discountedPriceTv);
             originalPriceTv = itemView.findViewById(R.id.originalPriceTv);
