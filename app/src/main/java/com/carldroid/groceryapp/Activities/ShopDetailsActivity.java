@@ -12,15 +12,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.carldroid.groceryapp.AdapterCart;
 import com.carldroid.groceryapp.Adapters.AdapterProductUser;
 import com.carldroid.groceryapp.Constants;
+import com.carldroid.groceryapp.Models.ModelCartItem;
 import com.carldroid.groceryapp.Models.ModelProduct;
 import com.carldroid.groceryapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +53,10 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
     private AdapterProductUser adapterProductUser;
     private ArrayList<ModelProduct> productList;
+
+    //cart
+    private ArrayList<ModelCartItem> cartItemList;
+    private AdapterCart adapterCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +120,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                showCartDialog();
             }
         });
 
@@ -155,6 +164,38 @@ public class ShopDetailsActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+    }
+
+    public double allTotalPrice = 0.00;
+
+    //I made this public to access them via adapter
+    public TextView sTotalTv, dFeeTv, allTotalPriceTv;
+
+    private void showCartDialog() {
+
+        //init list
+        cartItemList = new ArrayList<>();
+
+
+        //inflate layout
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_cart, null);
+
+        //init views
+        TextView shopNameTv = view.findViewById(R.id.shopNameTv);
+        RecyclerView cartItemRv = view.findViewById(R.id.cartItemsRv);
+        sTotalTv = view.findViewById(R.id.sTotalTv);
+        dFeeTv = view.findViewById(R.id.dFeeTv);
+        allTotalPriceTv = view.findViewById(R.id.totalTv);
+        Button checkOutBtn = view.findViewById(R.id.checkoutBtn);
+
+        //dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //set views to dialog
+        builder.setView(view);
+
+        shopNameTv.setText(shopName);
+
 
     }
 
