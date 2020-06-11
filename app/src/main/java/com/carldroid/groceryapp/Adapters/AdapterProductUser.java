@@ -12,6 +12,7 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,9 @@ import com.carldroid.groceryapp.Search.FilterProductsUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import p32929.androideasysql_library.Column;
+import p32929.androideasysql_library.EasyDB;
 
 public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.HolderProductUser> implements Filterable {
 
@@ -129,7 +133,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         final TextView quantityCountTv = view.findViewById(R.id.quantityCountTv);
         Button continueBtn = view.findViewById(R.id.continueBtn);
 
-        //get data
+        //get data from model
         String discountAvailable = modelProduct.getDiscountAvailable();
         String discountNote = modelProduct.getDiscountNote();
         String discountPrice = modelProduct.getDiscountPrice();
@@ -171,14 +175,14 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             productIv.setImageResource(R.drawable.ic_shopping_cart_gray);
         }
 
-        titleTv.setText(""+title);
-        pQuantityTv.setText(""+pQuantity);
-        descriptionTv.setText(""+description);
-        discountedNoteTvTv.setText(""+discountNote);
-        quantityCountTv.setText(""+quantity);
-        originalPriceTv.setText(""+modelProduct.getOriginalPrice());
-        discountedPriceTv.setText(""+modelProduct.getDiscountPrice());
-        finalPriceTv.setText(""+finalCost);
+        titleTv.setText("" + title);
+        pQuantityTv.setText("" + pQuantity);
+        descriptionTv.setText("" + description);
+        discountedNoteTvTv.setText("" + discountNote);
+        quantityCountTv.setText("" + quantity);
+        originalPriceTv.setText("" + modelProduct.getOriginalPrice());
+        discountedPriceTv.setText("" + modelProduct.getDiscountPrice());
+        finalPriceTv.setText("" + finalCost);
 
 
         final AlertDialog dialog1 = dialog.create();
@@ -192,7 +196,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                 quantity++;
 
                 finalPriceTv.setText("$" + finalCost);
-                quantityCountTv.setText(""+quantity);
+                quantityCountTv.setText("" + quantity);
             }
         });
 
@@ -200,12 +204,12 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         decrement_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (quantity > 1){
+                if (quantity > 1) {
                     finalCost = finalCost - cost;
                     quantity--;
 
-                    finalPriceTv.setText("$"+finalCost);
-                    quantityCountTv.setText(""+quantity);
+                    finalPriceTv.setText("$" + finalCost);
+                    quantityCountTv.setText("" + quantity);
                 }
             }
         });
@@ -214,20 +218,41 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             @Override
             public void onClick(View v) {
                 String title = titleTv.getText().toString().trim();
-                String priceEach = originalPriceTv.getText().toString().trim();
-                String price = finalPriceTv.getText().toString().trim();
+                String priceEach = originalPriceTv.getText().toString().trim().replace("$", "");
+                String price = finalPriceTv.getText().toString().trim().replace("$", "");
                 String quantity = quantityCountTv.getText().toString().trim();
 
                 //add to db(SQLite)
-                addToCart(productId,title,priceEach,price,quantity);
+                addToCart(productId, title, priceEach, price, quantity);
                 dialog1.dismiss();
             }
         });
 
     }
 
-    private void addToCart(String productId, String title, String priceEach, String price, String quantity) {
+    private int itemId = 1;
 
+    private void addToCart(String productId, String title, String priceEach, String price, String quantity) {
+        itemId++;
+
+        EasyDB easyDB = EasyDB.init(context, "ITEMS_DB") // TEST is the name of the DATABASE
+                .setTableName("ITEMS_TABLE")  // You can ignore this line if you want
+                .addColumn(new Column("Item_Id", new String[]{"text", "unique"}))
+                .addColumn(new Column("Item_PID", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Name", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Price_Each", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Quantity", new String[]{"text", "not null"}))
+                .doneTableColumn();
+
+        Boolean b = easyDB
+                .addData("Item_Id", itemId)
+                .addData("Item_PID", productId)
+                .addData("Item_Name", title)
+                .addData("Item_Price_Each", priceEach)
+                .addData("Item_Quantity", quantity)
+                .doneDataAdding();
+
+        Toast.makeText(context, "Added to cart...", Toast.LENGTH_SHORT).show();
 
     }
 
