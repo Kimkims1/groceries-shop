@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,11 +38,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import p32929.androideasysql_library.Column;
+import p32929.androideasysql_library.EasyDB;
+
 public class ShopDetailsActivity extends AppCompatActivity {
 
     private ImageView shopIv;
     private TextView shopNameTv, phoneTv, emailTv, openCloseTv, deliveryFeeTv, addressTv, filteredPdtsTv;
     private ImageButton callBtn, mapBtn, cartBtn, backBtn, filteredPdtBtn;
+    public String deliveryFee;
     private RecyclerView product_details_Rv;
     private EditText searchProductEt;
 
@@ -176,11 +181,8 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
         //init list
         cartItemList = new ArrayList<>();
-
-
         //inflate layout
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_cart, null);
-
         //init views
         TextView shopNameTv = view.findViewById(R.id.shopNameTv);
         RecyclerView cartItemRv = view.findViewById(R.id.cartItemsRv);
@@ -193,10 +195,59 @@ public class ShopDetailsActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //set views to dialog
         builder.setView(view);
-
         shopNameTv.setText(shopName);
 
+        EasyDB easyDB = EasyDB.init(this, "ITEMS_DB") // TEST is the name of the DATABASE
+                .setTableName("ITEMS_TABLE")  // You can ignore this line if you want
+                .addColumn(new Column("Item_Id", new String[]{"text", "unique"}))
+                .addColumn(new Column("Item_PID", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Name", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Price_Each", new String[]{"text", "not null"}))
+                .addColumn(new Column("Item_Quantity", new String[]{"text", "not null"}))
+                .doneTableColumn();
 
+        //Get all records from db
+        Cursor res = easyDB.getAllData();
+        while (res.moveToNext()) {
+            String id = res.getString(1);
+            String pId = res.getString(2);
+            String name = res.getString(3);
+            String price = res.getString(4);
+            String cost = res.getString(5);
+            String quantity = res.getString(6);
+
+            allTotalPrice = allTotalPrice + Double.parseDouble(cost);
+
+            ModelCartItem modelCartItem = new ModelCartItem(
+                    "" + id,
+                    "" + pId,
+                    "" + name,
+                    "" + price,
+                    "" + cost,
+                    "" + quantity
+            );
+
+            cartItemList.add(modelCartItem);
+        }
+
+        /* Set up adapter*/
+        adapterCart = new AdapterCart(this, cartItemList);
+        /* Set to recyclerview*/
+        cartItemRv.setAdapter(adapterCart);
+        dFeeTv.setText("$" + deliveryFee);
+        sTotalTv.setText("$"+String.format("%.2f", allTotalPrice));
+        allTotalPriceTv.setText("$"+(allTotalPrice + Double.parseDouble(deliveryFee.replace("$",""))));
+
+        /* Reset total price on dialog dismiss*/
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                allTotalPrice = 0.0;
+
+            }
+        });
     }
 
     private void openMap() {
@@ -263,7 +314,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
                 shopAddress = "" + dataSnapshot.child("address").getValue();
                 shopLatitude = "" + dataSnapshot.child("latitude").getValue();
                 shopLongitude = "" + dataSnapshot.child("longitude").getValue();
-                String deliveryFee = "" + dataSnapshot.child("deliveryFee").getValue();
+                deliveryFee = "" + dataSnapshot.child("deliveryFee").getValue();
                 String profileImage = "" + dataSnapshot.child("profileImage").getValue();
                 String shopOpen = "" + dataSnapshot.child("openShop").getValue();
 
